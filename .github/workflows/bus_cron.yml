@@ -2,15 +2,10 @@ name: Bus Notification System
 
 on:
   schedule:
-    # --- Morning Commute (KST 05:30) ---
-    # UTC 20:30 (Previous day) corresponds to 05:30 KST
-    # Runs Sunday to Thursday UTC (which is Mon to Fri KST)
-    - cron: '30 20 * * 0-4'
-
-    # --- Evening Commute (KST 16:30) ---
-    # UTC 07:30 (Same day) corresponds to 16:30 KST
+    # --- Evening Commute (KST 16:00) ---
+    # UTC 07:00 (Same day) corresponds to 16:00 KST
     # Runs Monday to Friday UTC (which is Mon to Fri KST)
-    - cron: '30 7 * * 1-5'
+    - cron: '0 7 * * 1-5'
     
   workflow_dispatch:
     inputs:
