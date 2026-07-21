@@ -53,19 +53,21 @@ class BusAPI:
         self.api_key = DATA_GO_KR_API_KEY
         
     def get_arrivals(self, station_id, target_routes):
-        # Using openapi test key temporarily if no key is provided, but mostly relying on the real key.
         key = self.api_key if self.api_key else "1234567890"
         url = f"http://apis.data.go.kr/6410000/busarrivalservice/v2/getBusArrivalListv2?serviceKey={key}&stationId={station_id}&format=xml"
-        # Fallback to openapi if the official one fails (like 429) - optional but useful for robustness
-        # url = f"http://openapi.gbis.go.kr/ws/rest/busarrivalservice/station?serviceKey={key}&stationId={station_id}"
         
         results = []
         try:
             resp = requests.get(url, timeout=10)
+            
+            # If rate limited or error, use fallback test API
             if resp.status_code != 200:
-                print(f"API Error: {resp.status_code}")
-                return results
-                
+                print(f"Primary API Error: {resp.status_code}. Using fallback...")
+                url = f"http://openapi.gbis.go.kr/ws/rest/busarrivalservice/station?serviceKey=1234567890&stationId={station_id}"
+                resp = requests.get(url, timeout=10)
+                if resp.status_code != 200:
+                    return results
+                    
             root = ET.fromstring(resp.text)
             for item in root.findall('.//busArrivalList'):
                 r_id = item.find('routeId').text if item.find('routeId') is not None else ""
