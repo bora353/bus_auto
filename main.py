@@ -104,7 +104,7 @@ def run_morning_loop():
     station_id = "233001219" # 36667 메타폴리스
     routes = {"233000426": "6012번"}
     
-    msg_id = None
+    msg_id = bot.send_message("🌅 [출근길 모니터링 시작]\n메타폴리스 정류장 조회를 시작합니다.")
     start_time = time.time()
     duration = 2 * 60 * 60 # 2 hours
     
@@ -114,13 +114,9 @@ def run_morning_loop():
             bus = arrivals[0]
             text = f"🚌 6012번 메타폴리스(중) {bus['predict_time']}분후 (💺{bus['remain_seat']}석)"
             
-            if not msg_id:
-                msg_id = bot.send_message(text)
-            else:
-                bot.edit_message(msg_id, text)
+            bot.edit_message(msg_id, text)
         else:
-            if msg_id:
-                bot.edit_message(msg_id, "🚌 6012번 메타폴리스(중) - 현재 도착 예정 버스 없음")
+            bot.edit_message(msg_id, "🚌 6012번 메타폴리스(중) - 현재 도착 예정 버스 없음")
                 
         # Wait 5 minutes
         time.sleep(300)
@@ -136,7 +132,7 @@ def run_evening_loop():
     station_id = "206000539" # 07495 금토천교
     routes = {"233000266": "6003번", "233000426": "6012번"}
     
-    msg_id = None
+    msg_id = bot.send_message("🌇 [퇴근길 모니터링 시작]\n금토천교 정류장 조회를 시작합니다.")
     start_time = time.time()
     duration = 2.5 * 60 * 60 # 2.5 hours
     
@@ -154,13 +150,9 @@ def run_evening_loop():
                 mark = "👈 NOW" if bus == fastest else ""
                 text += f"{bus['route_name']}: {bus['predict_time']}분 후 (잔여 {bus['remain_seat']}석) {mark}\n"
                 
-            if not msg_id:
-                msg_id = bot.send_message(text)
-            else:
-                bot.edit_message(msg_id, text)
+            bot.edit_message(msg_id, text)
         else:
-            if msg_id:
-                bot.edit_message(msg_id, "퇴근길 정류장 - 현재 도착 예정 버스 없음")
+            bot.edit_message(msg_id, "퇴근길 정류장 - 현재 도착 예정 버스 없음")
                 
         # Wait 5 minutes
         time.sleep(300)
