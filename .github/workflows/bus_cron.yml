@@ -1,0 +1,58 @@
+name: Bus Notification System
+
+on:
+  schedule:
+    # --- Morning Commute (KST 05:00) ---
+    # UTC 20:00 corresponds to 05:00 KST
+    - cron: '0 20 * * 1-5'
+
+    # --- Evening Commute (KST 15:00) ---
+    # UTC 06:00 corresponds to 15:00 KST
+    - cron: '0 6 * * 1-5'
+    
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Run Mode'
+        required: true
+        default: 'morning'
+        type: choice
+        options:
+        - morning
+        - evening
+
+jobs:
+  run-bus-notifier:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          
+      - name: Install Dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run Notifier Script
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          DATA_GO_KR_API_KEY: ${{ secrets.DATA_GO_KR_API_KEY }}
+        run: |
+          # If triggered manually, use the selected mode
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            python main.py --mode ${{ github.event.inputs.mode }}
+          else
+            # If triggered by Cron, decide based on UTC hour
+            HOUR=$(date -u +"%H")
+            if [ "$HOUR" -eq 20 ]; then
+              python main.py --mode morning
+            elif [ "$HOUR" -eq 06 ]; then
+              python main.py --mode evening
+            else
+              echo "Unexpected hour: $HOUR"
+            fi
+          fi
