@@ -48,6 +48,17 @@ class TelegramBot:
         except Exception as e:
             print(f"Edit Error: {e}")
 
+    def delete_message(self, message_id):
+        if not message_id or not TELEGRAM_BOT_TOKEN:
+            return
+        try:
+            requests.post(f"{self.base_url}/deleteMessage", data={
+                'chat_id': TELEGRAM_CHAT_ID,
+                'message_id': message_id
+            })
+        except Exception as e:
+            print(f"Delete Error: {e}")
+
 class BusAPI:
     def __init__(self):
         self.api_key = DATA_GO_KR_API_KEY
@@ -127,12 +138,17 @@ def run_morning_loop():
         if arrivals:
             bus = arrivals[0]
             text = f"🚌 6012번 메타폴리스(중) {bus['predict_time']}분후 (💺{bus['remain_seat']}석)"
-            bot.edit_message(msg_id, text)
+            if msg_id:
+                bot.delete_message(msg_id)
+            msg_id = bot.send_message(text)
         else:
-            bot.edit_message(msg_id, "🌅 출근길 메타폴리스(중) - 현재 도착 예정 버스 없음")
+            if msg_id:
+                bot.delete_message(msg_id)
+            msg_id = bot.send_message("🌅 출근길 메타폴리스(중) - 현재 도착 예정 버스 없음")
         
     if msg_id:
-        bot.edit_message(msg_id, "✅ 오늘 아침 출근길 알림이 종료되었습니다. 화이팅!")
+        bot.delete_message(msg_id)
+        bot.send_message("✅ 오늘 아침 출근길 알림이 종료되었습니다. 화이팅!")
 
 def run_evening_loop():
     print("Starting Evening Loop...")
@@ -171,12 +187,17 @@ def run_evening_loop():
             for bus in arrivals:
                 mark = "👈 NOW" if bus == fastest else ""
                 text += f"{bus['route_name']}: {bus['predict_time']}분 후 (잔여 {bus['remain_seat']}석) {mark}\n"
-            bot.edit_message(msg_id, text)
+            if msg_id:
+                bot.delete_message(msg_id)
+            msg_id = bot.send_message(text)
         else:
-            bot.edit_message(msg_id, "🌇 퇴근길 정류장 - 현재 도착 예정 버스 없음")
+            if msg_id:
+                bot.delete_message(msg_id)
+            msg_id = bot.send_message("🌇 퇴근길 정류장 - 현재 도착 예정 버스 없음")
         
     if msg_id:
-        bot.edit_message(msg_id, "✅ 오늘 퇴근길 알림이 종료되었습니다. 수고하셨습니다!")
+        bot.delete_message(msg_id)
+        bot.send_message("✅ 오늘 퇴근길 알림이 종료되었습니다. 수고하셨습니다!")
 
 def main():
     parser = argparse.ArgumentParser(description="Bus Notification System")
