@@ -2,13 +2,13 @@ name: Bus Notification System
 
 on:
   schedule:
-    # --- Morning Commute (KST 05:00) ---
-    # UTC 20:00 corresponds to 05:00 KST
-    - cron: '0 20 * * 1-5'
+    # --- Morning Commute (KST 05:30) ---
+    # UTC 20:30 corresponds to 05:30 KST
+    - cron: '30 20 * * 1-5'
 
-    # --- Evening Commute (KST 15:00) ---
-    # UTC 06:00 corresponds to 15:00 KST
-    - cron: '0 6 * * 1-5'
+    # --- Evening Commute (KST 16:30) ---
+    # UTC 07:30 corresponds to 16:30 KST
+    - cron: '30 7 * * 1-5'
     
   workflow_dispatch:
     inputs:
@@ -50,7 +50,7 @@ jobs:
             HOUR=$(date -u +"%H")
             if [ "$HOUR" -eq 20 ]; then
               python main.py --mode morning
-            elif [ "$HOUR" -eq 06 ]; then
+            elif [ "$HOUR" -eq 07 ]; then
               python main.py --mode evening
             else
               echo "Unexpected hour: $HOUR"
