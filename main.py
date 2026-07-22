@@ -59,6 +59,25 @@ class TelegramBot:
         except Exception as e:
             print(f"Delete Error: {e}")
 
+    def check_stop_command(self, start_timestamp):
+        if not TELEGRAM_BOT_TOKEN:
+            return False
+        try:
+            resp = requests.get(f"{self.base_url}/getUpdates", timeout=5)
+            if resp.status_code == 200:
+                data = resp.json()
+                for result in data.get('result', []):
+                    msg = result.get('message', {})
+                    text = msg.get('text', '').strip().lower()
+                    date = msg.get('date', 0)
+                    
+                    # If message was sent after script started, and contains stop keywords
+                    if date > start_timestamp and any(cmd in text for cmd in ["탑승", "중지", "종료", "끝", "stop"]):
+                        return True
+        except Exception as e:
+            print(f"Update Error: {e}")
+        return False
+
 class BusAPI:
     def __init__(self):
         self.api_key = DATA_GO_KR_API_KEY
@@ -176,8 +195,14 @@ def run_evening_loop():
     duration = 2 * 60 * 60 # 2 hours
     
     while time.time() - start_time < duration:
-        # Wait 5 minutes
-        time.sleep(300)
+        # Wait 5 minutes, but check for stop commands every 10 seconds
+        for _ in range(30):
+            if bot.check_stop_command(start_time):
+                if msg_id:
+                    bot.delete_message(msg_id)
+                bot.send_message("✅ 버스 탑승을 확인했습니다! 오늘 퇴근길 알림을 조기 종료합니다. 푹 쉬세요!")
+                return
+            time.sleep(10)
         
         arrivals = api.get_arrivals(station_id, routes)
         if arrivals:
