@@ -12,10 +12,9 @@ on:
       mode:
         description: 'Run Mode'
         required: true
-        default: 'morning'
+        default: 'evening'
         type: choice
         options:
-        - morning
         - evening
 
 jobs:
