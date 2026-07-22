@@ -173,7 +173,7 @@ def run_evening_loop():
     msg_id = bot.send_message(text)
     
     start_time = time.time()
-    duration = 1.5 * 60 * 60 # 1.5 hours
+    duration = 2 * 60 * 60 # 2 hours
     
     while time.time() - start_time < duration:
         # Wait 5 minutes
