@@ -186,8 +186,9 @@ def run_evening_loop():
         for bus in arrivals:
             mark = "👈 NOW" if bus == fastest else ""
             text += f"{bus['route_name']}: {bus['predict_time']}분 후 (잔여 {bus['remain_seat']}석) {mark}\n"
+        text += "\n(알림을 끌 때는 '/종료' 또는 '/탑승' 이라고 쳐주세요!)"
     else:
-        text = "🌇 퇴근길 정류장 - 현재 도착 예정 버스 없음"
+        text = "🌇 퇴근길 정류장 - 현재 도착 예정 버스 없음\n(알림을 끌 때는 '/종료' 또는 '/탑승' 이라고 쳐주세요!)"
         
     msg_id = bot.send_message(text)
     
