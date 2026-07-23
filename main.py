@@ -171,6 +171,17 @@ def run_morning_loop():
 
 def run_evening_loop():
     print("Starting Evening Loop...")
+    
+    # 1. Absorb GitHub Cron Delay (Wait until 16:30 KST)
+    kst = pytz.timezone('Asia/Seoul')
+    now = datetime.now(kst)
+    target_start = now.replace(hour=16, minute=30, second=0, microsecond=0)
+    
+    if now < target_start:
+        wait_seconds = (target_start - now).total_seconds()
+        print(f"Early start! Waiting for {wait_seconds} seconds until 16:30 KST...")
+        time.sleep(wait_seconds)
+        
     bot = TelegramBot()
     api = BusAPI()
     
@@ -193,7 +204,7 @@ def run_evening_loop():
     msg_id = bot.send_message(text)
     
     start_time = time.time()
-    duration = 2 * 60 * 60 # 2 hours
+    duration = 1.5 * 60 * 60 # 1.5 hours
     
     while time.time() - start_time < duration:
         # Wait 5 minutes, but check for stop commands every 10 seconds

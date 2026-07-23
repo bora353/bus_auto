@@ -2,10 +2,10 @@ name: Bus Notification System
 
 on:
   schedule:
-    # --- Evening Commute (KST 15:45) ---
-    # UTC 06:45 (Same day) corresponds to 15:45 KST
+    # --- Evening Commute (KST 16:00) ---
+    # Trigger massively early at 12:00 KST (03:00 UTC) to absorb Github delays
     # Runs Monday to Friday UTC (which is Mon to Fri KST)
-    - cron: '45 6 * * 1-5'
+    - cron: '0 3 * * 1-5'
     
   workflow_dispatch:
     inputs:
@@ -46,7 +46,7 @@ jobs:
             HOUR=$(date -u +"%H")
             if [ "$HOUR" -ge 18 ] && [ "$HOUR" -le 23 ]; then
               python main.py --mode morning
-            elif [ "$HOUR" -ge 05 ] && [ "$HOUR" -le 10 ]; then
+            elif [ "$HOUR" -ge 03 ] && [ "$HOUR" -le 08 ]; then
               python main.py --mode evening
             else
               echo "Unexpected hour: $HOUR"
